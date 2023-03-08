@@ -159,8 +159,7 @@ func (codec *ProtocolCodec) readFromBuff() (protocol.Message, bool, error) {
 		return protocol.Message{}, false, errors.ErrInvalidSuffixID
 	}
 
-	// 消息校验
-	// fmt.Printf("%s:%v", data[dataLen+6:dataLen+10], fmt.Sprintf("%04x", protocol.CRCCheckout(string(data[6:dataLen+6]))))
+	// 消息CRC校验
 	hexStr := string(data[dataLen+6 : dataLen+10])
 	decimal, err := strconv.ParseUint(hexStr, 16, 16)
 	if err != nil {

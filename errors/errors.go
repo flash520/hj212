@@ -46,4 +46,13 @@ var (
 
 	// ErrDecryptMessageFailed 消息解密失败
 	ErrDecryptMessageFailed = errors.New("消息解密失败")
+
+	// ErrValidHeaderJsonFailed 验证消息头json失败
+	ErrValidHeaderJsonFailed = errors.New("验证消息头json失败")
+
+	// ErrNotFoundPNUM 未找到分包信息
+	ErrNotFoundPNUM = errors.New("未找到分包信息")
+
+	// ErrNotFoundPNO 未找到分包序号
+	ErrNotFoundPNO = errors.New("未找到分包序号")
 )

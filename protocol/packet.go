@@ -9,6 +9,6 @@
 package protocol
 
 type Packet struct {
-	PNUM int
-	PNO  int
+	PNUM uint32
+	PNO  uint32
 }
