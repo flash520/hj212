@@ -14,6 +14,7 @@ import (
 
 	"github.com/flash520/hj212"
 	"github.com/flash520/hj212/consts"
+	"github.com/flash520/hj212/protocol"
 )
 
 func init() {
@@ -73,7 +74,19 @@ func main() {
 		CloseHandler:  nil,
 	})
 
+	server.AddHandler(22, 2051, ReceiveAtmospheric)
+
 	if err := server.Run(); err != nil {
 		log.Error(consts.ServerName, err.Error())
 	}
+}
+
+func ReceiveAtmospheric(session *hj212.Session, message *protocol.Message) {
+	atmospheric, ok := message.Body.(*protocol.MonitorAtmospheric)
+	if !ok {
+		log.WithFields(log.Fields{}).Error(consts.ServerName, "data type error")
+		return
+	}
+
+	log.WithFields(log.Fields{"a01002-avg": atmospheric.Body.A01002.Avg, "a01002-flag": atmospheric.Body.A01002.Flag}).Info(consts.ServerName, "气检测因子数据")
 }

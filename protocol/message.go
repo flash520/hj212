@@ -14,6 +14,7 @@ import (
 	log "github.com/sirupsen/logrus"
 
 	"github.com/flash520/hj212/consts"
+	"github.com/flash520/hj212/errors"
 )
 
 type Message struct {
@@ -42,6 +43,25 @@ func (message *Message) Decode(data []byte) error {
 	}
 
 	// 正文解码
+	bodyStr := dataStr[headerIndex:]
+	entity, err := message.decode(message.Header.ST, bodyStr)
+	if err != nil {
+		return err
+	}
+	message.Body = entity
 
 	return nil
+}
+
+func (message *Message) decode(typ uint16, data string) (Entity, error) {
+	entity, ok := entityMapper[typ]
+	if !ok {
+		return nil, errors.ErrEntityNotFound
+	}
+
+	if err := entity.Decode([]byte(data)); err != nil {
+		return nil, err
+	}
+
+	return entity, nil
 }

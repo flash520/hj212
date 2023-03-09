@@ -86,6 +86,9 @@ func (server *Server) GetSession(sessionID uint64) (*Session, bool) {
 
 // AddHandler 添加消息处理器
 func (server *Server) AddHandler(st, cn uint16, handler MessageHandler) {
+	if handler == nil {
+		return
+	}
 	server.messageHandlers.Store(st+cn, handler)
 }
 
@@ -108,11 +111,16 @@ func (server *Server) dispatchMessage(session *Session, message *protocol.Messag
 		"deviceID": session.deviceID,
 		"st":       message.Header.ST,
 		"cn":       message.Header.CN,
-	}).Debug(consts.ServerName, "分发消息")
+	}).Debug(consts.ServerName, "dispatch message")
 
 	handler, ok := server.messageHandlers.Load(message.Header.ST + message.Header.CN)
 	if !ok {
-		log.WithFields(log.Fields{}).Warn(consts.ServerName, "分发消息失败, 未找到对应类型的消息处理器")
+		log.WithFields(log.Fields{
+			"deviceID": session.deviceID,
+			"st":       message.Header.ST,
+			"cn":       message.Header.CN,
+			"reason":   "not found message handler",
+		}).Warn(consts.ServerName, "dispatch message failed")
 		return
 	}
 
@@ -137,5 +145,5 @@ func (server *Server) handleClose(session *Session) {
 	log.WithFields(log.Fields{
 		"deviceID":  session.deviceID,
 		"sessionID": session.session.ID(),
-	}).Debug(consts.ServerName, "会话结束")
+	}).Warn(consts.ServerName, "session closed")
 }

@@ -24,7 +24,7 @@ type sessionHandler struct {
 func (handler sessionHandler) HandleSession(sess *link.Session) {
 	log.WithFields(log.Fields{
 		"sessionID": sess.ID(),
-	}).Debug(consts.ServerName, "新会话创建成功")
+	}).Info(consts.ServerName, "new session created")
 
 	session := newSession(handler.server, sess)
 	handler.server.mutex.Lock()
@@ -45,6 +45,5 @@ func (handler sessionHandler) HandleSession(sess *link.Session) {
 		message := msg.(protocol.Message)
 		session.message(&message)
 		handler.server.dispatchMessage(session, &message)
-		continue
 	}
 }

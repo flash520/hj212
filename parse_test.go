@@ -43,7 +43,7 @@ func TestParse(t *testing.T) {
 	}
 
 	fmt.Printf("Entity: %#v\n", entity)
-	fmt.Printf("Body: %#v\n", body)
+	fmt.Printf("TimeBody: %#v\n", body)
 }
 
 func ParseMsg(msg string) (*Entity, *Body, error) {

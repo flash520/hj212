@@ -8,6 +8,7 @@
 
 package protocol
 
+// Entity Body实体
 type Entity interface {
 	Encode() ([]byte, error)
 	Decode([]byte) error

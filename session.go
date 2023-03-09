@@ -54,7 +54,7 @@ func (session *Session) message(message *protocol.Message) {
 				"sessionID": session.session.ID(),
 				"old":       old,
 				"new":       message.Header.MN,
-			}).Warn(consts.ServerName, "设备ID不一致")
+			}).Warn(consts.ServerName, "deviceID is inconsistent")
 		}
 
 		session.deviceID = message.Header.MN

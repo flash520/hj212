@@ -51,7 +51,7 @@ type ProtocolCodec struct {
 func (codec *ProtocolCodec) Send(msg interface{}) error {
 	message, ok := msg.(protocol.Message)
 	if !ok {
-		log.WithFields(log.Fields{"reason": errors.ErrInvalidMessage}).Error(consts.ServerName, "写入消息失败")
+		log.WithFields(log.Fields{"reason": errors.ErrInvalidMessage}).Error(consts.ServerName, "write message failed")
 		return errors.ErrInvalidMessage
 	}
 
@@ -60,7 +60,7 @@ func (codec *ProtocolCodec) Send(msg interface{}) error {
 		log.WithFields(log.Fields{
 			"deviceID": message.Header.MN,
 			"reason":   err.Error(),
-		}).Error(consts.ServerName, "写入消息失败")
+		}).Error(consts.ServerName, "write message failed")
 		return err
 	}
 
@@ -69,14 +69,14 @@ func (codec *ProtocolCodec) Send(msg interface{}) error {
 		log.WithFields(log.Fields{
 			"deviceID": message.Header.MN,
 			"reason":   err.Error(),
-		}).Error(consts.ServerName, "写入消息失败")
+		}).Error(consts.ServerName, "write message failed")
 		return err
 	}
 
 	log.WithFields(log.Fields{
 		"deviceID": message.Header.MN,
 		"bytes":    count,
-	}).Debug(consts.ServerName, "写入消息成功")
+	}).Debug(consts.ServerName, "write message successful")
 	return nil
 }
 
@@ -176,7 +176,7 @@ func (codec *ProtocolCodec) readFromBuff() (protocol.Message, bool, error) {
 		log.WithFields(log.Fields{
 			"data":   fmt.Sprintf("0x%x", hex.EncodeToString(data[:dataLen+12])),
 			"reason": err,
-		}).Error(consts.ServerName, "接收消息失败")
+		}).Error(consts.ServerName, "receive message failed")
 		return protocol.Message{}, false, err
 	}
 
@@ -186,7 +186,7 @@ func (codec *ProtocolCodec) readFromBuff() (protocol.Message, bool, error) {
 		"data": data[dataLen+10 : dataLen+12],
 		"len":  len(data),
 		"buff": codec.buffReceiving.Len(),
-	}).Info(consts.ServerName, "消息接收完成")
+	}).Debug(consts.ServerName, "receive message successful")
 	return message, true, nil
 }
 
