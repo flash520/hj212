@@ -10,6 +10,7 @@ package protocol
 
 import (
 	"encoding/json"
+	"fmt"
 	"regexp"
 	"strconv"
 	"strings"
@@ -26,8 +27,11 @@ type TimeBody struct {
 
 // DataPoint 数据点
 type DataPoint struct {
-	Avg  float64 `json:"avg"`
-	Flag byte    `json:"flag"`
+	Cou  *float64 `json:"cou"`  // 累计值
+	Min  *float64 `json:"min"`  // 最小值
+	Avg  *float64 `json:"avg"`  // 平均值
+	Max  *float64 `json:"max"`  // 最大值
+	Flag byte     `json:"flag"` // 数据标记
 }
 
 // Body 检测因子
@@ -162,8 +166,40 @@ type MonitorAtmospheric struct {
 }
 
 func (entity *MonitorAtmospheric) Encode() ([]byte, error) {
+	// 将数据反序列化到临时的map中
+	temp := make(map[string]DataPoint)
+	marshal, err := json.Marshal(entity.Body)
+	if err != nil {
+		return nil, err
+	}
+	if err = json.Unmarshal(marshal, &temp); err != nil {
+		return nil, err
+	}
 
-	return nil, nil
+	var builder strings.Builder
+	builder.WriteString("CP=&&")
+	timeStr := fmt.Sprintf("DataTime=%s;", entity.DataTime.Format("20060102150405"))
+	builder.WriteString(timeStr)
+
+	// 检查map中各个字段，仅编码有值的字段
+	for key, point := range temp {
+		format := "%s-Avg=%v,%s-Flag=%s;"
+		if point.Avg != nil {
+			fields := fmt.Sprintf(format, key, *point.Avg, key, string([]byte{point.Flag}))
+			builder.WriteString(fields)
+		}
+	}
+
+	// 去除CP最后一个字段后面的";"字符
+	s := builder.String()
+	l := builder.Len() - 1
+	builder.Reset()
+	builder.WriteString(s[:l])
+
+	// 添加CP结束标识符
+	builder.WriteString("&&")
+
+	return []byte(builder.String()), nil
 }
 
 // Decode 数据解码
@@ -190,7 +226,7 @@ func (entity *MonitorAtmospheric) Decode(data []byte) error {
 			}
 
 			body[strings.ToUpper(field[1])] = DataPoint{
-				Avg:  num,
+				Avg:  &num,
 				Flag: field[4][0],
 			}
 		}

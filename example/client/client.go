@@ -26,7 +26,16 @@ func main() {
 				panic(err)
 			}
 			var sendCount int
-			ticker := time.NewTicker(time.Microsecond)
+
+			go func() {
+				buff := make([]byte, 1000)
+				for {
+					count, _ := conn.Read(buff[:])
+					fmt.Println(string(buff[:count]))
+				}
+			}()
+
+			ticker := time.NewTicker(time.Second * 2)
 			for {
 				select {
 				case <-ticker.C:

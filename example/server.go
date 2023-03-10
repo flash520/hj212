@@ -88,5 +88,9 @@ func ReceiveAtmospheric(session *hj212.Session, message *protocol.Message) {
 		return
 	}
 
-	log.WithFields(log.Fields{"a01002-avg": atmospheric.Body.A01002.Avg, "a01002-flag": atmospheric.Body.A01002.Flag}).Info(consts.ServerName, "气检测因子数据")
+	log.WithFields(log.Fields{"a01002-avg": *atmospheric.Body.A01002.Avg, "a01002-flag": atmospheric.Body.A01002.Flag}).Info(consts.ServerName, "气检测因子数据")
+
+	if err := session.Send(message.Body); err != nil {
+		log.WithFields(log.Fields{"reason": err.Error()}).Error(consts.ServerName, "消息发送失败")
+	}
 }

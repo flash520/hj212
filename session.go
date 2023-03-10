@@ -41,7 +41,6 @@ func (session *Session) Send(entity protocol.Entity) error {
 		Header: protocol.Header{},
 		Body:   entity,
 	}
-
 	return session.session.Send(message)
 }
 

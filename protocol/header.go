@@ -32,8 +32,17 @@ type Header struct {
 
 // Encode 包头编码
 func (header *Header) Encode() ([]byte, error) {
+	builder := strings.Builder{}
 
-	return nil, nil
+	// 获取QN值
+	qn := header.QN.Format("20060102150405.000")
+	qn = strings.ReplaceAll(qn, ".", "")
+
+	// 获取header字符串，并写入buff
+	h := fmt.Sprintf("QN=%s;ST=%d;CN=%d;PW=%s;MN=%s;Flag=%v;", qn, header.ST, header.CN, header.PW, header.MN, header.Flag)
+	builder.WriteString(h)
+
+	return []byte(builder.String()), nil
 }
 
 // Decode 包头解码
