@@ -38,7 +38,7 @@ func (message *Message) Decode(data []byte) error {
 		log.WithFields(log.Fields{
 			"data":   dataStr[6:headerIndex],
 			"reason": err.Error(),
-		}).Error(consts.ServerName, "包头解析失败")
+		}).Error(consts.ServerName, "parse header failed")
 		return err
 	}
 

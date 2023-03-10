@@ -147,3 +147,7 @@ func (server *Server) handleClose(session *Session) {
 		"sessionID": session.session.ID(),
 	}).Warn(consts.ServerName, "session closed")
 }
+
+func (server *Server) SessionCount() uint64 {
+	return uint64(len(server.sessions))
+}

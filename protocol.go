@@ -114,23 +114,13 @@ func (codec *ProtocolCodec) Receive() (interface{}, error) {
 
 // readFromBuff 从buff解析数据
 func (codec *ProtocolCodec) readFromBuff() (protocol.Message, bool, error) {
-	if codec.buffReceiving.Len() == 0 {
+	if codec.buffReceiving.Len() == 0 || codec.buffReceiving.Len() < 6 {
 		return protocol.Message{}, false, nil
 	}
 
 	data := codec.buffReceiving.Bytes()
-	if len(data) < 16 {
-		log.WithFields(log.Fields{
-			"data":   string(data),
-			"reason": errors.ErrInvalidMessage,
-		}).Error(consts.ServerName, consts.ReadMessageFailed)
-
-		return protocol.Message{}, false, errors.ErrInvalidBody
-	}
-
 	// 检查报文头部标识符
 	if !bytes.HasPrefix(data, protocol.PrefixID) {
-		// codec.buffReceiving.Next(2)
 		log.WithFields(log.Fields{
 			"data":   hex.EncodeToString(data),
 			"reason": errors.ErrInvalidPrefixID,
