@@ -85,11 +85,11 @@ func (server *Server) GetSession(sessionID uint64) (*Session, bool) {
 }
 
 // AddHandler 添加消息处理器
-func (server *Server) AddHandler(st, cn uint16, handler MessageHandler) {
+func (server *Server) AddHandler(st uint16, handler MessageHandler) {
 	if handler == nil {
 		return
 	}
-	server.messageHandlers.Store(st+cn, handler)
+	server.messageHandlers.Store(st, handler)
 }
 
 // RemoveHandler 移除消息处理器
@@ -113,7 +113,7 @@ func (server *Server) dispatchMessage(session *Session, message *protocol.Messag
 		"cn":       message.Header.CN,
 	}).Debug(consts.ServerName, "dispatch message")
 
-	handler, ok := server.messageHandlers.Load(message.Header.ST + message.Header.CN)
+	handler, ok := server.messageHandlers.Load(message.Header.ST)
 	if !ok {
 		log.WithFields(log.Fields{
 			"deviceID": session.deviceID,
