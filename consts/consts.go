@@ -11,5 +11,5 @@ package consts
 const (
 	ServerName = "[HJ 212]"
 
-	ReadMessageFailed = "接收消息失败"
+	ReadMessageFailed = "receive message failed"
 )

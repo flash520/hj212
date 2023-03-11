@@ -74,7 +74,7 @@ func main() {
 		CloseHandler:  nil,
 	})
 
-	server.AddHandler(22, 2051, ReceiveAtmospheric)
+	server.AddHandler(22, ReceiveAtmospheric)
 
 	if err := server.Run(); err != nil {
 		log.Error(consts.ServerName, err.Error())

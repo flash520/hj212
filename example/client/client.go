@@ -21,7 +21,7 @@ func main() {
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			conn, err := net.Dial("tcp", "127.0.0.1:8192")
+			conn, err := net.Dial("tcp", "tb.cdqidi.cn:8005")
 			if err != nil {
 				panic(err)
 			}
