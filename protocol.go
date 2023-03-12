@@ -33,6 +33,7 @@ func (protocol *Protocol) NewCodec(rw io.ReadWriter) (link.Codec, error) {
 		r: rw,
 
 		buffReceiving: bytes.NewBuffer(nil),
+		pool:          BuffPool,
 	}
 	codec.closer = rw.(io.Closer)
 
@@ -45,6 +46,7 @@ type ProtocolCodec struct {
 
 	closer        io.Closer
 	buffReceiving *bytes.Buffer
+	pool          *buffPool
 }
 
 // Send 发送消息
@@ -90,7 +92,9 @@ func (codec *ProtocolCodec) Receive() (interface{}, error) {
 		return nil, err
 	}
 
-	var buff [128]byte
+	buff := codec.pool.Get()
+	defer codec.pool.Put(buff)
+	// var buff [128]byte
 	for {
 		count, err := io.ReadAtLeast(codec.r, buff[:], 1)
 		if err != nil {

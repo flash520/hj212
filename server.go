@@ -29,6 +29,7 @@ type Server struct {
 	messageHandlers sync.Map
 	closeHandler    func(session *Session)
 	listenAddress   string
+	protocol        link.Protocol
 	sendChanSize    int
 }
 
@@ -37,6 +38,7 @@ type Option struct {
 	SendChanSize  int
 	Keepalive     int
 	CloseHandler  func(session *Session)
+	Protocol      link.Protocol
 }
 
 type MessageHandler func(session *Session, message *protocol.Message)
@@ -50,6 +52,7 @@ func NewServer(option Option) *Server {
 		closeHandler:  option.CloseHandler,
 		listenAddress: option.ListenAddress,
 		sendChanSize:  option.SendChanSize,
+		protocol:      option.Protocol,
 		sessions:      make(map[uint64]*Session),
 	}
 	server.handler.server = server
@@ -69,8 +72,11 @@ func (server *Server) Run() error {
 		log.WithFields(log.Fields{"err": err.Error()}).Panic(consts.ServerName)
 	}
 
-	p := &Protocol{}
-	server.server = link.NewServer(listener, p, server.sendChanSize, server.handler)
+	if server.protocol == nil {
+		server.protocol = &Protocol{}
+	}
+
+	server.server = link.NewServer(listener, server.protocol, server.sendChanSize, server.handler)
 	log.Infof("%s %s %s", consts.ServerName, "protocol server started on ", server.listenAddress)
 	return server.server.Serve()
 }

@@ -21,7 +21,7 @@ func main() {
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			conn, err := net.Dial("tcp", "tb.cdqidi.cn:8005")
+			conn, err := net.Dial("tcp", "127.0.0.1:8005")
 			if err != nil {
 				panic(err)
 			}
@@ -35,7 +35,7 @@ func main() {
 				}
 			}()
 
-			ticker := time.NewTicker(time.Second * 2)
+			ticker := time.NewTicker(time.Millisecond * 2)
 			for {
 				select {
 				case <-ticker.C:
