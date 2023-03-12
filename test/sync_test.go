@@ -32,8 +32,9 @@ func (b *Buff) Get() interface{} {
 
 	// fmt.Println("new object")
 	atomic.AddUint32(&numCalcCreated, 1)
-	newObject := make(map[string]interface{})
-	return newObject
+	// newObject := make(map[string]interface{})
+	var o [128]byte
+	return &o
 }
 
 func (b *Buff) Put(object interface{}) {
@@ -65,8 +66,9 @@ func BenchmarkPool(b *testing.B) {
 
 	for i := 0; i < b.N; i++ {
 		atomic.AddUint32(&currentWorked, 1)
-		m1 := buff.Get().(map[string]interface{})
-		m1["a"] = 1
+		m1 := buff.Get().(*[128]byte)
+		// var m1 [128]byte
+		// m1[0] = 1
 		// fmt.Println("m1: ", m1)
 		buff.Put(m1)
 	}
