@@ -67,7 +67,7 @@ func (message *Message) Decode(data []byte) error {
 
 	// 包头解码
 	headerIndex := strings.Index(dataStr, "CP")
-	if err := message.Header.Decode([]byte(dataStr[6:headerIndex])); err != nil {
+	if err := message.Header.Decode(dataStr[6:headerIndex]); err != nil {
 		log.WithFields(log.Fields{
 			"data":   dataStr[6:headerIndex],
 			"reason": err.Error(),
@@ -93,7 +93,7 @@ func (message *Message) decode(typ uint16, data string) (Entity, error) {
 		return nil, errors.ErrEntityNotFound
 	}
 
-	if err := entity.Decode([]byte(data)); err != nil {
+	if err := entity.Decode(data); err != nil {
 		return nil, err
 	}
 
