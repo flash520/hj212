@@ -130,7 +130,7 @@ func (server *Server) dispatchMessage(session *Session, message *protocol.Messag
 		return
 	}
 
-	go handler.(MessageHandler)(session, message)
+	handler.(MessageHandler)(session, message)
 }
 
 // handleClose 会话结束回调
