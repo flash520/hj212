@@ -9,6 +9,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"net"
 	"sync"
@@ -16,26 +17,28 @@ import (
 )
 
 func main() {
+	start := time.Now()
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
 	wg := sync.WaitGroup{}
 	for i := 0; i < 1; i++ {
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			conn, err := net.Dial("tcp", "127.0.0.1:8005")
+			conn, err := net.Dial("tcp", "tb.cdqidi.cn:8005")
 			if err != nil {
 				panic(err)
 			}
 			var sendCount int
 
 			go func() {
-				buff := make([]byte, 1000)
+				buff := make([]byte, 1036)
 				for {
 					count, _ := conn.Read(buff[:])
 					fmt.Println(string(buff[:count]))
 				}
 			}()
 
-			ticker := time.NewTicker(time.Millisecond * 2)
+			ticker := time.NewTicker(time.Microsecond * 1)
 			for {
 				select {
 				case <-ticker.C:
@@ -47,10 +50,14 @@ func main() {
 					}
 					sendCount++
 					fmt.Println(sendCount)
+				case <-ctx.Done():
+					cancel()
+					return
 				}
 			}
 		}()
-		time.Sleep(time.Millisecond * 5)
+		// time.Sleep(time.Millisecond * 5)
 	}
 	wg.Wait()
+	fmt.Println(time.Since(start))
 }
